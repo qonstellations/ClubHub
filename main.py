@@ -1,6 +1,5 @@
 def main():
-    print("Hello from Clubhub again!")
-
+    print("Hi from Clubhub!")
 
 if __name__ == "__main__":
     main()
