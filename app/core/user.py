@@ -35,7 +35,9 @@ def register_user(
         last_name=last_name
     )
     
-    db.users.insert_one(user.conv_to_doc())
+    new_user_id = db.users.insert_one(user.conv_to_doc()).inserted_id
+    user._id = new_user_id
+
     return user
 
 def authenticate_user(email : str, password: str) -> User:
