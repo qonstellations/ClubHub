@@ -15,9 +15,6 @@ class User:
         self.pw_hash = pw_hash
         self.first_name = first_name
         self.last_name = last_name
-    
-    def get_id(self):
-        return self._id
 
     @classmethod
     def conv_to_obj(cls, doc):
@@ -53,9 +50,6 @@ class Club:
             self.club_code = club_code
             self.created_at = created_at
 
-    def get_id(self):
-        return self._id
-
     @classmethod
     def conv_to_obj(cls, doc):
         return cls(
@@ -86,9 +80,6 @@ class Role:
             self.name = name
             self.club_id = club_id
             self.count = count
-    
-    def get_id(self):
-        return self._id
 
     @classmethod
     def conv_to_obj(cls, doc):
@@ -122,9 +113,6 @@ class Membership:
             self.role_id = role_id
             self.joined_at = joined_at
             self.left_at = left_at
-    
-    def get_id(self):
-        return self._id
 
     @classmethod
     def conv_to_obj(cls, doc):
@@ -145,4 +133,74 @@ class Membership:
             "role_id" : self.role_id,
             "joined_at" : self.joined_at,
             "left_at" : self.left_at,
+        }
+
+class Channel:
+    def __init__(self, 
+            _id : ObjectId | None, 
+            club_id : ObjectId,
+            name : str,  
+            created_by : ObjectId,
+            created_at : datetime
+        ):
+            self._id = _id
+            self.club_id = club_id
+            self.name = name
+            self.created_by = created_by
+            self.created_at = created_at
+
+    @classmethod
+    def conv_to_obj(cls, doc):
+        return cls(
+            _id=doc["_id"],
+            club_id=doc["club_id"],
+            name=doc["name"],
+            created_by=doc["created_by"],
+            created_at=doc["created_at"]
+        )
+
+    def conv_to_doc(self):
+        return {
+            "_id" : (ObjectId() if self._id is None else self._id),
+            "club_id" : self.club_id,
+            "name" : self.name,
+            "created_by" : self.created_by,
+            "created_at" : self.created_at
+        }
+
+class Message:
+    def __init__(self, 
+            _id : ObjectId | None, 
+            channel_id : ObjectId,
+            sender_id : ObjectId,
+            content : str,  
+            category : "text", # we can add more types later on
+            sent_at : datetime
+        ):
+            self._id = _id
+            self.channel_id = channel_id
+            self.sender_id = sender_id
+            self.content = content
+            self.category = category
+            self.sent_at = sent_at
+
+    @classmethod
+    def conv_to_obj(cls, doc):
+        return cls(
+            _id=doc["_id"],
+            channel_id=doc["channel_id"],
+            sender_id=doc["sender_id"],
+            content=doc["content"],
+            category=doc["category"],
+            sent_at=doc["sent_at"]
+        )
+
+    def conv_to_doc(self):
+        return {
+            "_id" : (ObjectId() if self._id is None else self._id),
+            "channel_id" : self.channel_id,
+            "sender_id" : self.sender_id,
+            "content" : self.content,
+            "category" : self.category,
+            "sent_at" : self.sent_at
         }
