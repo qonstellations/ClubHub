@@ -1,8 +1,8 @@
 import socket
 import threading
 
-host ='10.0.240.220'
-port = 10001
+host ='0.tcp.in.ngrok.io'
+port = 11545
 
 nickname = input("Choose a nickname")
 client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -19,9 +19,8 @@ def receive():
                 print(message)
 
         except:
-            print("An error occured")
-            client.close()
             break
+
 def write():
     while True:
         try:
