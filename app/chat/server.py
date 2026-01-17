@@ -1,60 +1,42 @@
-import threading
-import socket
+from flask import Flask
+from flask_socketio import SocketIO, emit
 
-host = '0.0.0.0'
-port = 10001
+app = Flask(__name__)
+socketio = SocketIO(app, cors_allowed_origins="*")
 
-server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-server.bind((host, port))
-server.listen()
+# socket_id -> nickname
+users = {}
 
-clients = list()
-nicknames = list()
+@socketio.on("connect")
+def on_connect():
+    print("Client connected")
 
-def broadcast(message):
-    for client in clients:
-        client.send(message.encode('ascii'))
+@socketio.on("set_nickname")
+def set_nickname(data):
+    nickname = data["nickname"]
+    users[id(socketio)] = nickname   # temporary key replaced below
 
-def handle(client):
-    #this function is going to handle the messages coming from the client and broadcasting it to every client present in that server at that time and if someone left the server then this function also handles to remove that client from the server too 
-    while True:
-        try:
-            message = client.recv(1024).decode('ascii')
-            broadcast(message)
-            if not message:
-                raise Exception("Client disconnected")
-                
-        except:
-            # if the client left the server then this whole thing will work to remove that client
-            if client in clients: 
-                index = clients.index(client)
-                clients.remove(client)
-                client.close()
-                nickname = nicknames[index]
-                broadcast(f"{nickname} has left the chat!!")
-                nicknames.remove(nickname)
-            break
+    # better: use request.sid
+    from flask import request
+    users[request.sid] = nickname
 
-def receive():
-    while True:
-        client, address = server.accept()
-        print(f"connected with {str(address)}")
+    emit("system_message", f"{nickname} joined the chat", broadcast=True)
 
-        client.send('NICK'.encode('ascii'))
-        nickname = client.recv(1024).decode('ascii')
-        nicknames.append(nickname)
-        clients.append(client)
+@socketio.on("send_message")
+def send_message(data):
+    from flask import request
+    nickname = users.get(request.sid, "Unknown")
 
-        print(f'Nickname of the client is {nickname}')
-        broadcast(f'{nickname} joined the chat\n')
-        client.send("connected to the server".encode('ascii'))
+    message = f"{nickname}: {data['message']}"
+    emit("new_message", message, broadcast=True)
 
-        thread = threading.Thread(target=handle, args=(client,))
-        thread.start()
+@socketio.on("disconnect")
+def on_disconnect():
+    from flask import request
+    nickname = users.pop(request.sid, None)
+    if nickname:
+        emit("system_message", f"{nickname} left the chat", broadcast=True)
+    print("Client disconnected")
 
-print("Server is listening")
-receive()
-
-
-
-
+if __name__ == "__main__":
+    socketio.run(app, host="0.0.0.0", port=10001)

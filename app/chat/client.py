@@ -1,40 +1,39 @@
-import socket
+import socketio
 import threading
 
-host ='0.tcp.in.ngrok.io'
-port = 11545
+nickname = input("Choose a nickname: ")
 
-nickname = input("Choose a nickname")
-client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-client.connect((host, port))
+sio = socketio.Client()
 
-def receive():
-    while True:
-        try:
-            message = client.recv(1024).decode('ascii')
-            if message == 'NICK':
-                client.send(nickname.encode('ascii'))
+@sio.event
+def connect():
+    print("Connected to server")
+    sio.emit("set_nickname", {"nickname": nickname})
 
-            else:
-                print(message)
+@sio.on("new_message")
+def on_message(msg):
+    print(msg)
 
-        except:
-            break
+@sio.on("system_message")
+def on_system(msg):
+    print(f"[SYSTEM] {msg}")
+
+@sio.event
+def disconnect():
+    print("Disconnected from server")
 
 def write():
     while True:
         try:
-            message = f'{nickname}: {input("")}'
-            client.send(message.encode('ascii'))
-
-        except (EOFError, KeyboardInterrupt):
-            # This happens if you press Ctrl+C or the stream ends
-            print("\nDisconnecting...")
-            client.close()
+            msg = input()
+            sio.emit("send_message", {"message": msg})
+        except (KeyboardInterrupt, EOFError):
+            sio.disconnect()
             break
 
-receive_thread = threading.Thread(target=receive)
-receive_thread.start()
+sio.connect("http://127.0.0.1:10001")
 
 write_thread = threading.Thread(target=write)
 write_thread.start()
+
+sio.wait()
