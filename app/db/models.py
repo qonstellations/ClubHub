@@ -35,6 +35,17 @@ class User:
             "last_name": self.last_name,
         }
 
+    # socketio doesn't recognise ObjectId object
+    # this returns a serialised json dict
+    def conv_to_wire(self):
+        return {
+            "_id": str(self._id),
+            "email": self.email,
+            "pw_hash": self.pw_hash,
+            "first_name": self.first_name,
+            "last_name": self.last_name,
+        }
+
 
 class Club:
     def __init__(self, 

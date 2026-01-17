@@ -1,14 +1,16 @@
+from app.core.user import User
+
 import socketio
 import threading
 
-nickname = input("Choose a nickname: ")
+current_user = None
 
 sio = socketio.Client()
 
 @sio.event
 def connect():
     print("Connected to server")
-    sio.emit("set_nickname", {"nickname": nickname})
+    sio.emit("add_user", {"user": current_user.conv_to_wire()})
 
 @sio.on("new_message")
 def on_message(msg):
@@ -26,14 +28,18 @@ def write():
     while True:
         try:
             msg = input()
+            if not msg:
+                raise ValueError("No message provided!")
+                return
             sio.emit("send_message", {"message": msg})
         except (KeyboardInterrupt, EOFError):
             sio.disconnect()
             break
 
-sio.connect("http://127.0.0.1:10001")
+def start_client(user):
+    global current_user
+    current_user = user
 
-write_thread = threading.Thread(target=write)
-write_thread.start()
-
-sio.wait()
+    sio.connect("http://127.0.0.1:10001")
+    threading.Thread(target=write, daemon=True).start()
+    sio.wait()
