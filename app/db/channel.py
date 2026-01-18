@@ -1,4 +1,4 @@
-from app.db.models import Channel, ObjectId
+from app.db.models import Channel, ObjectId, datetime
 from app.db.client import db
 
 def insert_channel(

@@ -1,5 +1,6 @@
-from app.db.channel import ObjectId, find_channels, insert_channel
+from app.db.channel import Channel, ObjectId, find_channels, insert_channel
 from app.db.club import Club
+from app.db.user import User
 from app.core.user import is_admin
 
 def get_club_channels(
@@ -7,10 +8,7 @@ def get_club_channels(
 ) -> list:
     channels = find_channels(club_id=club._id)
 
-    if channels is None:
-        raise ValueError("No channels found!")
-    else:
-        return channels
+    return channels
 
 @is_admin
 def create_channel(

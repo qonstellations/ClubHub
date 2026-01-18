@@ -73,8 +73,8 @@ Rankings based on participation and contributions.
 **[3] Attendance Records 📋**  
 Attendance and participation history.
 
-**[4] Create New Channel 🛠️** *(Admin Only)*  
+**[4] View Users 👤** 
 Create a new discussion or project channel.
 
-**[5] Go back to Welcome Page 👋**
+**[5] Go back to Club Page 👋**
 """))

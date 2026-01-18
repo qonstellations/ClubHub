@@ -3,7 +3,7 @@ from app.core.user import authenticate_user, create_user
 from app.chat import client
 
 def main():
-    # welcome()
+    welcome()
 
     """
 
@@ -15,10 +15,8 @@ def main():
 
     # user = create_user("pookie@gmail.com", "abc123", "abc123", "pookie", "wookie")
 
-    user = authenticate_user("aarush@gmail.com", "abc123")
-    homepage(user=user)
-    # client.start_client(user=user)
-    # client.write()
+    # user = authenticate_user("aarush@gmail.com", "abc123")
+    # homepage(user=user)
 
 if __name__ == "__main__":
     main()

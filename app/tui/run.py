@@ -1,7 +1,8 @@
 from app.tui import text
+from app.tui.chat import start_chat
 from app.core.user import User, create_user, authenticate_user, get_user_clubs, get_user_role
-from app.core.club import Club, create_club, club_member_count, get_club_channels
-from app.core.channel import Channel, create_channel
+from app.core.club import Club, create_club, club_member_count
+from app.core.channel import Channel, create_channel, get_club_channels
 
 # separate app imports from third party imports
 from rich.console import Console, Group
@@ -220,12 +221,7 @@ def clubpage(user : User, club : Club):
                     pause()
                     clubpage(user=user, club=club)
                 else:
-                    # redirect to channels
-                    console.print("\n[yellow]Feature will be added later[/yellow]")
-                    console.print("[yellow]Redirecting back to clubpage...[/yellow]")
-                    pause()
-                    clubpage(user=user, club=club)
-                    
+                    view_channel(user=user, club=club, channel=channel)            
 
         case 2:
             console.print("\n[yellow]Feature will be added later[/yellow]")
@@ -242,6 +238,10 @@ def clubpage(user : User, club : Club):
         case 4:
             name = str(input("Enter channel name : "))
             channel = create_channel(club=club, name=name, user=user)
+            console.print("\n[green]Channel created successfully[/green]")
+            console.print("[yellow]Redirecting to newly created channel...[/yellow]")
+            pause()
+            view_channel(user=user, club=club, channel=channel)
 
         case 5:
             homepage(user=user)
@@ -252,5 +252,10 @@ def clubpage(user : User, club : Club):
             pause()
             clubpage(user=user, club=club)
 
-def view_channel(channel : Channel):
-    return
+def view_channel(user: User, club: Club, channel: Channel):
+    start_chat(
+        user=user,
+        club=club,
+        channel=channel
+    )
+    clubpage(user=user, club=club)
