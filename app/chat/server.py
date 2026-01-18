@@ -35,7 +35,10 @@ def send_message(data):
     user = users.get(request.sid, "Unknown")
 
     message = f"{user.first_name}: {data['message']}"
-    emit("new_message", message, broadcast=True)
+    emit("new_message", 
+        message, 
+        broadcast=True,
+        include_self=False)
 
 @socketio.on("disconnect")
 def on_disconnect():

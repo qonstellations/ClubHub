@@ -27,10 +27,10 @@ def disconnect():
 def write():
     while True:
         try:
-            msg = input()
-            if not msg:
-                raise ValueError("No message provided!")
-                return
+            global current_user
+            msg = input(f"{current_user.first_name}: ")
+            if not msg.strip():
+                continue
             sio.emit("send_message", {"message": msg})
         except (KeyboardInterrupt, EOFError):
             sio.disconnect()

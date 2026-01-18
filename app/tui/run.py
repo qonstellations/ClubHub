@@ -1,6 +1,7 @@
 from app.tui import text
 from app.core.user import User, create_user, authenticate_user, get_user_clubs, get_user_role
-from app.core.club import Club, create_club, club_member_count
+from app.core.club import Club, create_club, club_member_count, get_club_channels
+from app.core.channel import Channel, create_channel
 
 # separate app imports from third party imports
 from rich.console import Console, Group
@@ -8,6 +9,7 @@ from rich.table import Table
 from rich.layout import Layout
 from rich.prompt import Prompt
 from rich.text import Text
+from rich.columns import Columns
 from app.tui.text import Panel
 
 import os
@@ -132,9 +134,9 @@ def homepage(user : User):
                 club_cards = list()
                 for index, club in enumerate(user_clubs, start=1):
                     content = Group(
-                        Text(f"\nRole : {get_user_role(user, club).name}", style="bold", justify="center"),
-                        Text(f"\nDescription : {club.description}", justify="center"),
-                        Text(f"\nTotal Members : {club_member_count(club)}", justify="center"),
+                        Text(f"Role : {get_user_role(user, club).name}", style="bold", justify="center"),
+                        Text(f"Description : {club.description}"),
+                        Text(f"Total Members : {club_member_count(club)}"),
                     )
 
                     card = Panel(
@@ -143,27 +145,28 @@ def homepage(user : User):
                         border_style="blue",
                         subtitle=Text(f"Option {index}"),
                         subtitle_align="center",
-                        width=40,
+                        width=30,
                         height=15
                     )
                     club_cards.append(card)
 
-                club_layout = Layout()
-                club_layout.split_row(*club_cards)
-
-                top = Panel(Text("Your Clubs", justify="center"), border_style="green")
-
-                console.print(top)
-                console.print(club_layout)
+                console.print(
+                    Panel(
+                        Text("Your Clubs", justify="center", style="bold"),
+                        border_style="green",
+                        padding=(0, 1)
+                    )
+                )
+                console.print(Columns(club_cards, align="center", expand=False))
 
             club_index = int(input("\nEnter Option Number : "))
-            if(index < 1 or index > len(club_cards)):
+            if club_index < 1 or club_index > len(club_cards):
                 console.print("\n[bold red]Please fill a valid input[/bold red]")
                 console.print("[yellow]Redirecting back to homepage...[/yellow]")
                 pause()
                 homepage(user)
             else:
-                clubpage(club=user_clubs[club_index-1])
+                clubpage(user=user, club=user_clubs[club_index-1])
 
         case 3:
             console.print("\n[yellow]Feature will be added later[/yellow]")
@@ -177,7 +180,7 @@ def homepage(user : User):
             pause()
             homepage(user)
 
-def clubpage(club : Club):
+def clubpage(user : User, club : Club):
     clear_terminal()
     console.print(Panel(Text(club.name, justify="center")))
     console.print(text.clubpage)
@@ -186,25 +189,68 @@ def clubpage(club : Club):
 
     match inp:
         case 1:
-            console.print("\n[yellow]Feature will be added later[/yellow]")
-            console.print("[yellow]Redirecting back to clubpage...[/yellow]")
-            pause()
-            clubpage(club=club)
+            channels = get_club_channels(club=club)
+            console.print(
+                    Panel(
+                        Text("All Channels", justify="center", style="bold"),
+                        border_style="green",
+                        padding=(0, 1)
+                    )
+                )
+
+            if channels is None:
+                console.print(
+                    Panel(
+                        Text("You don't have any channels to view!\nReturning to clubpage...", 
+                            justify="center", style="bold"),
+                        border_style="red",
+                        padding=(0, 1)
+                    )
+                )
+                pause()
+                clubpage(user=user, club=club)
+            else:
+                for index, channel in enumerate(channels, start=1):
+                    console.print(Text(f"[{index}] {channel.name}", style="bold"))
+
+                channel_index = int(input("\nEnter Option Number : "))
+                if channel_index < 1 or channel_index > len(channels):
+                    console.print("\n[bold red]Please fill a valid input[/bold red]")
+                    console.print("[yellow]Redirecting back to homepage...[/yellow]")
+                    pause()
+                    clubpage(user=user, club=club)
+                else:
+                    # redirect to channels
+                    console.print("\n[yellow]Feature will be added later[/yellow]")
+                    console.print("[yellow]Redirecting back to clubpage...[/yellow]")
+                    pause()
+                    clubpage(user=user, club=club)
+                    
 
         case 2:
             console.print("\n[yellow]Feature will be added later[/yellow]")
             console.print("[yellow]Redirecting back to clubpage...[/yellow]")
             pause()
-            clubpage(club=club)
+            clubpage(user=user, club=club)
         
         case 3:
             console.print("\n[yellow]Feature will be added later[/yellow]")
             console.print("[yellow]Redirecting back to clubpage...[/yellow]")
             pause()
-            clubpage(club=club)
+            clubpage(user=user, club=club)
+
+        case 4:
+            name = str(input("Enter channel name : "))
+            channel = create_channel(club=club, name=name, user=user)
+
+        case 5:
+            homepage(user=user)
 
         case _:
             console.print("\n[bold red]Please fill a valid input[/bold red]")
             console.print("[yellow]Redirecting back to clubpage...[/yellow]")
             pause()
-            clubpage(club=club)
+            clubpage(user=user, club=club)
+
+def view_channel(channel : Channel):
+    return

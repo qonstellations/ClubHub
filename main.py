@@ -1,4 +1,4 @@
-# from app.tui.run import welcome
+from app.tui.run import welcome, homepage
 from app.core.user import authenticate_user, create_user
 from app.chat import client
 
@@ -15,10 +15,10 @@ def main():
 
     # user = create_user("pookie@gmail.com", "abc123", "abc123", "pookie", "wookie")
 
-    user = authenticate_user("pookie@gmail.com", "abc123")
-
-    client.start_client(user=user)
-    client.write()
+    user = authenticate_user("aarush@gmail.com", "abc123")
+    homepage(user=user)
+    # client.start_client(user=user)
+    # client.write()
 
 if __name__ == "__main__":
     main()

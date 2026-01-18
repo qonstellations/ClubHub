@@ -4,7 +4,8 @@ from app.db.client import db
 def insert_membership(
     user_id: ObjectId,
     club_id: ObjectId,
-    role_id: ObjectId
+    role_id: ObjectId,
+    is_admin: bool
 ) -> Membership:
 
     membership = Membership(
@@ -13,7 +14,8 @@ def insert_membership(
         club_id=club_id,
         role_id=role_id,
         joined_at=datetime.now(),
-        left_at=None
+        left_at=None,
+        is_admin=is_admin
     )
 
     new_membership_id = db.memberships.insert_one(membership.conv_to_doc()).inserted_id
@@ -26,6 +28,7 @@ def find_memberships(
     user_id: ObjectId = None, 
     club_id: ObjectId = None, 
     role_id: ObjectId = None,
+    is_admin: bool = None
 ) -> list | None:
 
     query_filter = dict()
@@ -38,6 +41,8 @@ def find_memberships(
         query_filter.update({"club_id" : club_id})
     elif role_id is not None:
         query_filter.update({"role_id" : role_id})
+    elif is_admin is not None:
+        query_filter.update({"is_admin" : is_admin})
     else:
         raise ValueError("Atleast one query must be specified for search")
     
