@@ -3,6 +3,7 @@ from app.db.club import Club, find_club
 from app.db.role import Role, find_role
 from app.db.membership import find_memberships
 
+from functools import wraps
 from pymongo.errors import DuplicateKeyError
 from werkzeug.security import check_password_hash
 
@@ -52,10 +53,28 @@ def authenticate_user(
         else:
             raise ValueError("Passwords do not match!")
 
+# Decorator for only admin functions
+def is_admin(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        user = kwargs.get("user") or args[0]
+        club = kwargs.get("club") or args[1]
+
+        membership = find_memberships(user_id=user._id, club_id=club._id)[0]
+
+        if not membership.is_admin:
+            raise PermissionError("Admin privileges required")
+
+        return func(*args, **kwargs)
+    return wrapper
+
 def get_user_clubs(
     user : User
 ) -> list:
     memberships = find_memberships(user_id=user._id)
+
+    if memberships is None:
+        return None
 
     club_list = list()
     for membership in memberships:

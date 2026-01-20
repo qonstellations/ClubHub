@@ -59,25 +59,22 @@ Explore other clubs and see what's happening.
 '''))
 
 
-clubpage = Panel(Markdown('''
+clubpage = Panel(Markdown("""
 # 🛡️ CLUBPAGE
 
-### [1] 📢 Announcements
-*Stay updated with the latest Updates inside the Club.*
-- **🔓 Public:** Public News and Updates
-- **🔒 Private:** Core team meeting schedules
+### Select an option:
 
-### [2] 📺 Channels
-*Join Different Channels and Communicate throughout the Club:*
-- **General** (Public Discussion)
-- **Events** (Planning & Coordination)
-- **Tech-Team** (Dev Updates)
-- **Specified Project Related**
+**[1] All Channels 📺**  
+Browse and access available club channels.
 
-### [3] 🛠️ Admin Zone (Leads & Co-Leads)
-> **restricted:** Only verified Club Leads can access this section.
-- **[+] Create New Channel**: Set up a new topic-specific group chat.
+**[2] Leaderboard 🏆**  
+Rankings based on participation and contributions.
 
----
-*Select an option (1-3) to proceed*
-'''))
+**[3] Attendance Records 📋**  
+Attendance and participation history.
+
+**[4] View Users 👤** 
+Create a new discussion or project channel.
+
+**[5] Go back to Club Page 👋**
+"""))

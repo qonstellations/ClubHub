@@ -35,6 +35,17 @@ class User:
             "last_name": self.last_name,
         }
 
+    # socketio doesn't recognise ObjectId object
+    # this returns a serialised json dict
+    def conv_to_wire(self):
+        return {
+            "_id": str(self._id),
+            "email": self.email,
+            "pw_hash": self.pw_hash,
+            "first_name": self.first_name,
+            "last_name": self.last_name,
+        }
+
 
 class Club:
     def __init__(self, 
@@ -105,7 +116,8 @@ class Membership:
             club_id : ObjectId, 
             role_id : ObjectId, 
             joined_at : datetime, 
-            left_at : datetime | None
+            left_at : datetime | None,
+            is_admin : bool
         ):
             self._id = _id
             self.user_id = user_id
@@ -113,6 +125,7 @@ class Membership:
             self.role_id = role_id
             self.joined_at = joined_at
             self.left_at = left_at
+            self.is_admin = is_admin
 
     @classmethod
     def conv_to_obj(cls, doc):
@@ -122,7 +135,8 @@ class Membership:
             club_id=doc["club_id"],
             role_id=doc["role_id"],
             joined_at=doc["joined_at"],
-            left_at=doc["left_at"]
+            left_at=doc["left_at"],
+            is_admin=doc["is_admin"]
         )
 
     def conv_to_doc(self):
@@ -133,6 +147,7 @@ class Membership:
             "role_id" : self.role_id,
             "joined_at" : self.joined_at,
             "left_at" : self.left_at,
+            "is_admin" : self.is_admin
         }
 
 class Channel:
