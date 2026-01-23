@@ -15,7 +15,7 @@ def main():
 
     # user = create_user("pookie@gmail.com", "abc123", "abc123", "pookie", "wookie")
 
-    # user = authenticate_user("aarush@gmail.com", "abc123")
+    # user = authenticate_user("makhanchor@gmail.com", "ghopghop")
     # homepage(user=user)
 
 if __name__ == "__main__":

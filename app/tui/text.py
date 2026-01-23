@@ -75,6 +75,9 @@ Attendance and participation history.
 
 **[4] View Users 👤** 
 Create a new discussion or project channel.
+                          
+**[5] Add members to the club ➕**
+Only club lead has the authority.
 
-**[5] Go back to Club Page 👋**
+**[6] Go back to CLUBHUB DASHBOARD 👋**
 """))

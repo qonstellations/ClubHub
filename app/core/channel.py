@@ -10,12 +10,12 @@ def get_club_channels(
 
     return channels
 
-@is_admin
 def create_channel(
     club: Club,
     name: str,
     user: User,
 ) -> Channel:
+    # add check for admin using is_admin()
     
     if name is None or not user or not club:
         raise ValueError("All fields are compulsory")

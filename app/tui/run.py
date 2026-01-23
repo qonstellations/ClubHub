@@ -1,14 +1,14 @@
 from app.tui import text
 from app.tui.chat import start_chat
 from app.core.user import User, create_user, authenticate_user, get_user_clubs, get_user_role
-from app.core.club import Club, create_club, club_member_count
+from app.core.club import Club, create_club, club_member_count, add_club_member, get_roles
 from app.core.channel import Channel, create_channel, get_club_channels
 
 # separate app imports from third party imports
 from rich.console import Console, Group
 from rich.table import Table
 from rich.layout import Layout
-from rich.prompt import Prompt
+from rich.prompt import Prompt, Confirm, IntPrompt
 from rich.text import Text
 from rich.columns import Columns
 from app.tui.text import Panel
@@ -68,7 +68,7 @@ def login():
 
         case 2: 
             email = str(input("Enter your E-mail: "))
-            password = Prompt.ask("Enter a password: ", password=True, console=console)
+            password = Prompt.ask("Enter the password: ", password=True, console=console)
             user = authenticate_user(email=email, password=password)
 
             if user is not None:
@@ -116,7 +116,7 @@ def homepage(user : User):
                 console.print("\n[bold green]Club Created Successfully!![/bold green]")
                 console.print("[green]Redirecting to Clubpage...[/green]")
                 pause()
-                clubpage()
+                clubpage(user=user, club=club)
             else:
                 console.print("\n[bold red]Something went wrong, please try again![/bold red]")
                 console.print("[yellow]Redirecting back to Homepage...[/yellow]")
@@ -135,7 +135,7 @@ def homepage(user : User):
                 club_cards = list()
                 for index, club in enumerate(user_clubs, start=1):
                     content = Group(
-                        Text(f"Role : {get_user_role(user, club).name}", style="bold", justify="center"),
+                        Text(f"Role : {get_user_role(user=user, club=club).name}", style="bold", justify="center"),
                         Text(f"Description : {club.description}"),
                         Text(f"Total Members : {club_member_count(club)}"),
                     )
@@ -244,6 +244,33 @@ def clubpage(user : User, club : Club):
             view_channel(user=user, club=club, channel=channel)
 
         case 5:
+            email = Prompt.ask("[bold white]Enter user email[/bold white]", default="user@example.com")
+            console.print("\n[bold yellow]Role Configuration[/bold yellow]")
+            role_action = IntPrompt.ask(
+                "\nType [bold cyan]1[/bold cyan] to create new role or Type [bold cyan]2[/bold cyan] to choose role from the existing roles",
+                choices=["1", "2"],
+                show_choices=False,
+                show_default=False,
+                default=2
+            )
+
+            if role_action == 1:
+                role_name = Prompt.ask("\n[bold white]Enter a name for the new role: [/bold white]")
+                make_admin = Confirm.ask("Do you want to grant [bold red]Admin[/bold red] permissions?")
+
+                membership = add_club_member(email=email, role=role_name, club=club, user=user, make_admin=make_admin)
+
+            if role_action == 2:
+                roles_list = get_roles(club=club)
+                
+                for role in roles_list:
+                    print
+
+
+
+            console.print("\n[green]Successfully added user in the club [/green]")
+
+        case 6:
             homepage(user=user)
 
         case _:

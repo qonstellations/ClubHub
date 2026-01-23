@@ -53,20 +53,12 @@ def authenticate_user(
         else:
             raise ValueError("Passwords do not match!")
 
-# Decorator for only admin functions
-def is_admin(func):
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-        user = kwargs.get("user") or args[0]
-        club = kwargs.get("club") or args[1]
-
-        membership = find_memberships(user_id=user._id, club_id=club._id)[0]
-
-        if not membership.is_admin:
-            raise PermissionError("Admin privileges required")
-
-        return func(*args, **kwargs)
-    return wrapper
+def is_admin(
+        user : User,
+        club : Club
+    ):
+    membership = find_memberships(user_id=user._id, club_id=club._id)[0]
+    return True if membership.is_admin else False
 
 def get_user_clubs(
     user : User
