@@ -5,10 +5,6 @@ def insert_role(
     name: str,
     club_id: ObjectId
 ) -> Role:
-
-    if not all([name, club_id]):
-        raise ValueError("All fields are compulsory")
-
     role = Role(
         _id=None,
         name=name,

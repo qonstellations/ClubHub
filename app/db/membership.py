@@ -31,20 +31,21 @@ def find_memberships(
     is_admin: bool = None
 ) -> list | None:
 
+    if _id is None and user_id is None and club_id is None and role_id is None and is_admin is None:
+        raise ValueError("All fields are compulsory")
+
     query_filter = dict()
 
     if _id is not None:
         query_filter.update({"_id" : _id})
-    elif user_id is not None:
+    if user_id is not None:
         query_filter.update({"user_id" : user_id})
-    elif club_id is not None:
+    if club_id is not None:
         query_filter.update({"club_id" : club_id})
-    elif role_id is not None:
+    if role_id is not None:
         query_filter.update({"role_id" : role_id})
-    elif is_admin is not None:
+    if is_admin is not None:
         query_filter.update({"is_admin" : is_admin})
-    else:
-        raise ValueError("Atleast one query must be specified for search")
     
     memberships = list()
 

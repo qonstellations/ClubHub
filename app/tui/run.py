@@ -1,7 +1,7 @@
 from app.tui import text
 from app.tui.chat import start_chat
 from app.core.user import User, create_user, authenticate_user, get_user_clubs, get_user_role
-from app.core.club import Club, create_club, club_member_count, add_club_member, get_roles
+from app.core.club import Club, create_club, club_member_count, add_club_member, get_club_roles, add_club_role
 from app.core.channel import Channel, create_channel, get_club_channels
 
 # separate app imports from third party imports
@@ -236,18 +236,16 @@ def clubpage(user : User, club : Club):
             clubpage(user=user, club=club)
 
         case 4:
-            name = str(input("Enter channel name : "))
-            channel = create_channel(club=club, name=name, user=user)
-            console.print("\n[green]Channel created successfully[/green]")
-            console.print("[yellow]Redirecting to newly created channel...[/yellow]")
+            console.print("\n[yellow]Feature will be added later[/yellow]")
+            console.print("[yellow]Redirecting back to clubpage...[/yellow]")
             pause()
-            view_channel(user=user, club=club, channel=channel)
+            clubpage(user=user, club=club)
 
         case 5:
             email = Prompt.ask("[bold white]Enter user email[/bold white]", default="user@example.com")
             console.print("\n[bold yellow]Role Configuration[/bold yellow]")
             role_action = IntPrompt.ask(
-                "\nType [bold cyan]1[/bold cyan] to create new role or Type [bold cyan]2[/bold cyan] to choose role from the existing roles",
+                "\nType [bold cyan]1[/bold cyan] Create new role\n[bold cyan]2[/bold cyan] Choose an existing role",
                 choices=["1", "2"],
                 show_choices=False,
                 show_default=False,
@@ -256,19 +254,34 @@ def clubpage(user : User, club : Club):
 
             if role_action == 1:
                 role_name = Prompt.ask("\n[bold white]Enter a name for the new role: [/bold white]")
+                role = add_club_role(name=role_name, club=club)
                 make_admin = Confirm.ask("Do you want to grant [bold red]Admin[/bold red] permissions?")
 
-                membership = add_club_member(email=email, role=role_name, club=club, user=user, make_admin=make_admin)
+                membership = add_club_member(email=email, club=club, role=role, user=user, make_admin=make_admin)
 
             if role_action == 2:
                 roles_list = get_roles(club=club)
                 
-                for role in roles_list:
-                    print
+                for index, role in enumerate(roles_list, start=1):
+                    console.print(f"[{index}] {role.name} (Total Count : {role.count})")
 
+                role_index = IntPrompt.ask(
+                    "Choose option number : ",
+                    choices=list(map(str, range(1, index+1))),
+                    show_choices=False,
+                    show_default=False,
+                    default=1
+                )
 
+                make_admin = Confirm.ask("\nDo you want to grant [bold red]Admin[/bold red] permissions?")
+
+                selected_role = roles_list[role_index]
+                membership = add_club_member(email=email, club=club, role=role, user=user, make_admin=make_admin)
 
             console.print("\n[green]Successfully added user in the club [/green]")
+            console.print("[yellow]Redirecting back to clubpage...[/yellow]")
+            pause()
+            clubpage(user=user, club=club)
 
         case 6:
             homepage(user=user)
