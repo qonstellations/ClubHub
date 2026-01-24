@@ -21,33 +21,7 @@ def insert_role(
 
     return role
 
-def find_role(
-    _id : ObjectId = None,
-    name: str = None,
-    club_id : str = None
-) -> Role | None:
-    
-    query_filter = dict()
-
-    if _id is not None:
-        query_filter.update({"_id" : _id})
-    if name is not None:
-        # searches name even with first few keywords
-        query_filter.update({"name" : {"$regex": f"^{name}", "$options": "i"}})
-    if club_id is not None:
-        query_filter.update({"club_id" : club_id})
-    
-    if _id is None and name is None and club_id is None:
-        raise ValueError("Atleast one query must be specified for search")
-    
-    role_doc = db.roles.find_one(filter=query_filter)
-    
-    if role_doc is None:
-        return None
-    else:
-        return Role.conv_to_obj(role_doc)
-    
-def find_roles_list(
+def find_roles(
     _id : ObjectId = None,
     name: str = None,
     club_id : str = None

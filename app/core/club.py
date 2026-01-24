@@ -1,5 +1,5 @@
 from app.db.club import Club, ObjectId, insert_club, get_club_member_count
-from app.db.role import insert_role, find_role, find_roles_list
+from app.db.role import insert_role, find_roles
 from app.db.user import User, find_user
 from app.db.membership import insert_membership, Membership
 from app.core.user import is_admin
@@ -57,7 +57,7 @@ def add_club_member(
     make_admin : bool
 ) -> Membership:
     
-    role = find_role(name=role_name, club_id=club._id)
+    role = find_roles(name=role_name, club_id=club._id)[0]
     found_user = find_user(email=email)
 
     if found_user is not None:
@@ -85,7 +85,7 @@ def get_roles(
     club : Club
 )->list:
     
-    roles_list = find_roles_list(club_id=club._id)
+    roles_list = find_roles(club_id=club._id)
 
     if roles_list == []:
         return None

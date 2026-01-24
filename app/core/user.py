@@ -1,6 +1,6 @@
 from app.db.user import User, ObjectId, insert_user, find_user
 from app.db.club import Club, find_club
-from app.db.role import Role, find_role
+from app.db.role import Role, find_roles
 from app.db.membership import find_memberships
 
 from functools import wraps
@@ -82,5 +82,5 @@ def get_user_role(
     club : Club
 ) -> Role:
     membership = find_memberships(user_id=user._id, club_id=club._id)[0]
-    user_role = find_role(_id=membership.role_id)
+    user_role = find_roles(_id=membership.role_id)[0]
     return user_role
